@@ -27,11 +27,6 @@ def about():
     """Render the website's about page."""
     return render_template('about.html')
     
-@app.route('/secure-page')
-@login_required
-def secure_page():
-    return render_template('secure_page.html')
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -58,11 +53,26 @@ def login():
             user = UserProfile.query.filter_by(username=username).first()
             if user is not None and check_password_hash(user.password, password):
                 login_user(user)
-
-            # remember to flash a message to the user
-            flash("You have logged in successfully!","success")
-            return redirect(url_for("secure_page"))  # they should be redirected to a secure-page route instead
+                # remember to flash a message to the user
+                flash("You have logged in successfully!","success")
+                return redirect(url_for("secure_page"))  # they should be redirected to a secure-page route instead
     return render_template("login.html", form=form)
+    
+    
+    
+    
+@app.route('/secure-page')
+@login_required
+def secure_page():
+    return render_template('secure_page.html')
+    
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("You have been successfully logged out!","success")
+    return redirect(url_for('home'))
+
 
 
 # user_loader callback. This callback is used to reload the user object from
